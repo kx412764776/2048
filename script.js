@@ -4,15 +4,16 @@ import Tile from "./Tile.js"
 const gameBoard = document.getElementById("game-board")
 
 const grid = new Grid(gameBoard)
-console.log(grid.randomEmptyCell())
 grid.randomEmptyCell().tile = new Tile(gameBoard)
 grid.randomEmptyCell().tile = new Tile(gameBoard)
+setupInput()
 
 function setupInput() {
     window.addEventListener("keydown", handleInput, { once: true })
 }
 
 async function handleInput(e) {
+    console.log("Key pressed:", e.key)
     switch (e.key) {
         case "ArrowUp":
             if (!canMoveUp()) {
@@ -51,8 +52,8 @@ async function handleInput(e) {
     const newTile = new Tile(gameBoard)
     grid.randomEmptyCell().tile = newTile
 
-    if (!canMoveUp() && !canMoveDown && !canMoveLeft() && !canMoveRight()) {
-        newTile.waitForTransition(ture).then(() => {
+    if (!canMoveUp() && !canMoveDown() && !canMoveLeft() && !canMoveRight()) {
+        newTile.waitForTransition(true).then(() => {
             alert("You lose")
         })
         return
@@ -61,19 +62,19 @@ async function handleInput(e) {
 }
 
 function moveUp() {
-    slideTiles(grid.cellsByColumn)
+    return slideTiles(grid.cellsByColumn)
 }
 
 function moveDown() {
-    slideTiles(grid.cellsByColumn.map(column => [...column].reverse()))
+    return slideTiles(grid.cellsByColumn.map(column => [...column].reverse()))
 }
 
 function moveLeft() {
-    slideTiles(grid.cellsByRow)
+    return slideTiles(grid.cellsByRow)
 }
 
 function moveRight() {
-    slideTiles(grid.cellsByRow.map(row => [...row].reverse))
+    return slideTiles(grid.cellsByRow.map(row => [...row].reverse()))
 }
 
 function slideTiles(cells) {
@@ -119,7 +120,7 @@ function canMoveRight() {
     return canMove(grid.cellsByRow.map(row => [...row].reverse()))
 }
 
-function canMove() {
+function canMove(cells) {
     return cells.some(group => {
         return group.some((cell, index) => {
             if (index === 0) return false
